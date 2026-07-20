@@ -1,0 +1,29 @@
+﻿# Game dumps & secrets
+GameFiles/
+Extraction/
+ExtractionOutput/
+Firmware/
+Saves/
+*.keys
+prod.keys
+title.keys
+*.nsp
+*.xci
+*.nca
+*.nso
+
+# Local / IDE
+.idea/
+**/node_modules/
+dist/
+*.log
+
+# Heavy / optional local tooling (not your app)
+Tools/*.exe
+Tools/CriPakTools/
+Tools/hactool*/
+
+# Research / one-off exports (keep local)
+Mods/
+Scripts/_*.py
+TODO.md

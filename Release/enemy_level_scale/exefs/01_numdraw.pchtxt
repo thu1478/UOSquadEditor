@@ -1,0 +1,6 @@
+@nsobid-C841FFE2717FF03A13990480C51DA73F091C04FA
+@flag offset_shift 0x100
+@enabled
+// 0x5C9994 -> BL cave
+005C9994 86951A94
+@stop

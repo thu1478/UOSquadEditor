@@ -7,7 +7,7 @@ There are two separate things. You do not need both.
 
 | If you want to… | Do this |
 |-----------------|---------|
-| Scale **enemy levels** to your party average | Download [Dist/enemy_level_scale.zip](../Dist/enemy_level_scale.zip) and copy the folder into Ryujinx. How it works: [ELI5_enemy_levels.md](ELI5_enemy_levels.md) |
+| Scale **enemy levels** to your party average | Download [Release/enemy_level_scale.zip](../Release/enemy_level_scale.zip) and copy the folder into Ryujinx. How it works: [ELI5_enemy_levels.md](ELI5_enemy_levels.md) |
 | Change **who** is in a mission squad, their **gear**, or their **tactics** | [squad_tactics_equipment.md](squad_tactics_equipment.md), then run `run-editor.bat` |
 
 Editor how-tos:

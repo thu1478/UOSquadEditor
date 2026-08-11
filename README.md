@@ -11,7 +11,7 @@ These are **two separate things**. You can use either, or both.
 | Want | Get |
 |------|-----|
 | Enemy levels = your party average | [Download the level scaler](Release/enemy_level_scale.zip) — copy the folder into Ryujinx. Done. |
-| Change mission squads / gear / tactics | The editor below (website or `run-editor.bat`). |
+| Change mission squads / gear / tactics | [Open the editor](https://thu1478.github.io/UOSquadEditor/) |
 
 ## Just the level scaler
 
@@ -24,18 +24,15 @@ Details: [Release/enemy_level_scale/README.md](Release/enemy_level_scale/README.
 
 ## Squad editor
 
-Double-click `run-editor.bat`, or:
+**Use the website:** https://thu1478.github.io/UOSquadEditor/
 
-```powershell
-cd Tools\mission_editor
-npm install
-npm run dev
-```
+1. Edit squads, gear, tactics, class defaults, or default-gear tables
+2. Optionally name the mod in **Mod folder name**
+3. **Export Ryujinx mod** — downloads a zip
+4. Unzip, then in Ryujinx: right-click Unicorn Overlord → **Open Mods Directory** → paste the folder
+5. Enable it under **Manage Mods**. Fully quit Ryujinx, then boot.
 
-Open the localhost URL Vite prints. Export writes a mod under `Mods/` for Ryujinx.
-
-**Website (browse / edit only):** https://thu1478.github.io/UOSquadEditor/  
-GitHub Pages cannot write a `.pchtxt`. Download edits JSON there, then import it in the local editor and Export.
+**Import editor mod…** reloads a zip/folder you exported earlier (`mission_editor_edits.json`).
 
 **New to the data model?** Read [Docs/squad_tactics_equipment.md](Docs/squad_tactics_equipment.md) (examples first, hex later).
 

@@ -1,29 +1,15 @@
 # Mission Squad Editor
 
-A local webpage for changing Unicorn Overlord **mission squads** (who stands
-where, what they hold, which tactics list they use) and exporting a Ryujinx mod.
+Change Unicorn Overlord **mission squads** (who stands where, what they hold,
+which tactics list they use) and export a Ryujinx mod.
+
+**Use the website:** https://thu1478.github.io/UOSquadEditor/
 
 You need your own copy of the game. This is not an official tool.
 
 If the words UnitSet / CharaSet / preset 0 are new, read
 [Docs/squad_tactics_equipment.md](../../Docs/squad_tactics_equipment.md) first.
 It uses examples, not hex dumps.
-
-## Start it
-
-From the repo root, double-click **`run-editor.bat`**, or:
-
-```powershell
-.\Scripts\sync_mission_editor_data.ps1   # refresh data the GUI reads
-cd Tools\mission_editor
-npm install                              # first time only
-npm run dev
-```
-
-Open the localhost URL Vite prints.
-
-The website build can browse and edit, but cannot write a `.pchtxt`. Use
-**Download edits JSON** there, then import locally to produce a Ryujinx mod.
 
 ## What the tabs are for
 
@@ -62,11 +48,12 @@ weapons are **`NORMAL_SWORD_M`**. `ENEMY_*` rows are unused.
 
 ## Export / import
 
-**Export Ryujinx mod** writes `Mods/<name>/` including `exefs/main.pchtxt` and
-`mission_editor_edits.json`. Copy that folder into Ryujinx, enable it under
-**Manage Mods**, fully quit, then boot again.
+**Export Ryujinx mod** downloads `<name>.zip` with `exefs/main.pchtxt` and
+`mission_editor_edits.json`. Unzip, copy the folder into Ryujinx → **Open Mods
+Directory**, enable it under **Manage Mods**, fully quit, then boot. Name it
+with **Mod folder name**.
 
-**Import editor mod…** — pick that exported folder (or the JSON) to keep working.
+**Import editor mod…** — pick the exported zip (or `mission_editor_edits.json`) to keep working.
 
 **Load mods folder…** — preview someone else’s class `.pchtxt` in Final tactics.
 It is not bundled into your export unless you made those class edits here.

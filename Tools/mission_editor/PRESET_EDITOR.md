@@ -7,7 +7,7 @@ mission units, and exporting a Ryujinx mod.
 If UnitSet / CharaSet / “preset 0” are new, start with
 [`Docs/squad_tactics_equipment.md`](../../Docs/squad_tactics_equipment.md)
 (plain-language examples). Addresses are in that doc’s **Reference** section.
-For setup (`run-editor.bat` / `npm run dev`), see [`README.md`](README.md).
+Open the editor at https://thu1478.github.io/UOSquadEditor/ — tabs and export are in [`README.md`](README.md).
 
 ---
 

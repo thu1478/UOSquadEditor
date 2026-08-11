@@ -14,6 +14,9 @@ import {
   type ItemSkill,
   type ResolveLine,
 } from "./tacticsResolve";
+import { buildMissionMod } from "./exportMissionMod";
+import { overlayPchtxtOnCatalog } from "./resolvePchtxt";
+import { unzipTextFiles, zipStore } from "./zipStore";
 
 type Gear = {
   item_id: number;
@@ -225,7 +228,6 @@ type Edits = {
 };
 
 const DATA_URL = `${import.meta.env.BASE_URL}data/mission_squads.json`;
-const IS_STATIC = import.meta.env.VITE_STATIC === "1";
 const MODS_STORAGE_KEY = "uo_mission_editor_mod_paths";
 
 const EMPTY_EDITS: Edits = {
@@ -611,40 +613,38 @@ function App() {
     files: { name: string; text: string }[],
     persistLabels?: string[]
   ) {
-    if (IS_STATIC) {
-      setModStatus(
-        "Loading class .pchtxt mods needs the local editor (Python). On the website, edit here then Download edits JSON."
-      );
+    if (!doc) {
+      setModStatus("Catalog is still loading.");
       return;
     }
     setModLoading(true);
-    setModStatus("Resolving class/skill mods…");
+    setModStatus("Applying .pchtxt…");
     try {
-      const res = await fetch("/api/resolve-tactics", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          patches: files.map((f) => ({ name: f.name, text: f.text })),
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || res.statusText);
-      setLiveClassTactics(data.class_tactics || []);
-      const imap = new Map<number, ItemSkill>();
-      for (const [k, v] of Object.entries(data.item_skills || {})) {
-        imap.set(Number(k), v as ItemSkill);
-      }
-      setLiveItemSkills(imap);
-      const labels: string[] =
-        persistLabels ??
-        (Array.isArray(data.files)
-          ? data.files.map((name: unknown) => String(name))
-          : files.map((f) => f.name));
+      const skills = new Map(
+        (doc.skills ?? []).map((sk) => [
+          sk.id,
+          { name: sk.name, symbol: sk.symbol },
+        ])
+      );
+      const ifs = new Map(
+        (doc.equipai_if ?? []).map((row) => [row.id, row.name || row.symbol || ""])
+      );
+      const overlay = overlayPchtxtOnCatalog(
+        files,
+        doc.class_tactics ?? [],
+        skills,
+        ifs
+      );
+      setLiveClassTactics(overlay.class_tactics);
+      setLiveItemSkills(overlay.item_skills);
+      const labels = persistLabels ?? files.map((f) => f.name);
       setLoadedModPaths(labels);
       localStorage.setItem(MODS_STORAGE_KEY, JSON.stringify(labels));
       setModStatus(
-        `Loaded ${files.length} .pchtxt · ${data.patches_applied ?? 0} patches applied` +
-          (labels.length ? ` · ${labels.map((n) => String(n).split(/[/\\]/).pop()).join(", ")}` : "")
+        `Loaded ${files.length} .pchtxt · ${overlay.patches_applied} patches` +
+          (labels.length
+            ? ` · ${labels.map((n) => String(n).split(/[/\\]/).pop()).join(", ")}`
+            : "")
       );
     } catch (e) {
       setModStatus(String(e));
@@ -1524,6 +1524,18 @@ function App() {
     if (!fileList?.length) return;
     try {
       const all = Array.from(fileList);
+      if (all.length === 1 && all[0].name.toLowerCase().endsWith(".zip")) {
+        const unzipped = await unzipTextFiles(await all[0].arrayBuffer());
+        const hit = pickEditsFile(unzipped);
+        if (!hit) {
+          setExportMsg(
+            "Import failed: that zip has no mission_editor_edits.json."
+          );
+          return;
+        }
+        importEditorText(hit.name.split(/[/\\]/).pop() || hit.name, hit.text);
+        return;
+      }
       // Single JSON file selected directly.
       if (all.length === 1 && all[0].name.toLowerCase().endsWith(".json")) {
         importEditorText(all[0].name, await all[0].text());
@@ -1557,96 +1569,29 @@ function App() {
     }
   }
 
-  async function readJsonFromDirectoryHandle(
-    dir: FileSystemDirectoryHandle,
-    prefix = ""
-  ): Promise<{ name: string; text: string }[]> {
-    const out: { name: string; text: string }[] = [];
-    for await (const [name, handle] of dir.entries()) {
-      const rel = prefix ? `${prefix}/${name}` : name;
-      if (handle.kind === "directory") {
-        out.push(
-          ...(await readJsonFromDirectoryHandle(
-            handle as FileSystemDirectoryHandle,
-            rel
-          ))
-        );
-      } else if (handle.kind === "file" && name.toLowerCase().endsWith(".json")) {
-        const file = await (handle as FileSystemFileHandle).getFile();
-        out.push({ name: rel.replace(/\\/g, "/"), text: await file.text() });
-      }
-    }
-    return out;
-  }
-
   async function pickAndImportEditorData() {
-    try {
-      const w = window as Window & {
-        showDirectoryPicker?: (opts?: {
-          id?: string;
-          mode?: "read";
-        }) => Promise<FileSystemDirectoryHandle>;
-      };
-      if (typeof w.showDirectoryPicker === "function") {
-        const dir = await w.showDirectoryPicker({
-          id: "uo-editor-import",
-          mode: "read",
-        });
-        const files = await readJsonFromDirectoryHandle(dir);
-        const hit = pickEditsFile(files);
-        if (!hit) {
-          setExportMsg(
-            `No mission_editor_edits.json (or mission_edits*.json) under “${dir.name}”.`
-          );
-          return;
-        }
-        try {
-          importEditorText(hit.name.split(/[/\\]/).pop() || hit.name, hit.text);
-        } catch (e) {
-          setExportMsg(`Import failed: ${String(e)}`);
-        }
-        return;
-      }
-      editorImportInputRef.current?.click();
-    } catch (e) {
-      const msg = String(e);
-      if (/abort/i.test(msg)) return;
-      setExportMsg(msg);
-    }
+    editorImportInputRef.current?.click();
   }
 
   async function exportMod() {
-    if (IS_STATIC) {
-      downloadEdits();
-      setExportMsg(
-        "This website cannot write a Ryujinx .pchtxt. Downloaded edits JSON — import it in the local editor (run-editor.bat) and Export there."
-      );
-      return;
-    }
     setExporting(true);
     setExportMsg("");
+    const payload = sanitizeEditsForExport(edits);
     const modName = slugModName(
       modNameInput || `mission_squad_${timeStamp()}`
     );
     try {
-      const res = await fetch("/api/export-mod", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          edits: sanitizeEditsForExport(edits),
-          mod_name: modName,
-          unique: true,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || res.statusText);
+      if (!doc) throw new Error("Catalog is still loading.");
+      const built = buildMissionMod(payload, doc, modName);
+      const blob = zipStore(built.files);
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `${modName}.zip`;
+      a.click();
+      URL.revokeObjectURL(a.href);
       setExportMsg(
-        `Exported ${data.patches ?? "?"} patches → ${data.out_dir || data.path}` +
-          (data.edits_path ? ` · edits ${data.edits_path}` : "")
+        `Downloaded ${modName}.zip (${built.patchCount} patches). Unzip and copy the folder into Ryujinx → Open Mods Directory.`
       );
-      if (data.mod_name && data.mod_name !== modNameInput) {
-        setModNameInput("");
-      }
     } catch (e) {
       setExportMsg(String(e));
     } finally {
@@ -1897,12 +1842,8 @@ function App() {
           <button
             type="button"
             onClick={() => void pickAndLoadMods()}
-            disabled={modLoading || IS_STATIC}
-            title={
-              IS_STATIC
-                ? "Needs the local editor (Python + dumped main)"
-                : "Open a mod folder (e.g. Mods/class_editor) and apply all .pchtxt under it"
-            }
+            disabled={modLoading}
+            title="Open a mod folder and apply its .pchtxt to class/item preview"
           >
             {modLoading ? "Loading mods…" : "Load mods folder…"}
           </button>
@@ -1920,7 +1861,6 @@ function App() {
             style={{ display: "none" }}
             onChange={(e) => void onModFolderInputChange(e.target.files)}
           />
-          {!IS_STATIC && (
           <label className="mod-name-field">
             Mod folder name
             <input
@@ -1930,26 +1870,23 @@ function App() {
               onChange={(e) => setModNameInput(e.target.value)}
             />
           </label>
-          )}
           <button type="button" onClick={resetChanges} disabled={!hasEdits()}>
             Reset changes
           </button>
-          {!IS_STATIC && (
           <button type="button" onClick={downloadEdits} disabled={!hasEdits()}>
             Download edits JSON
           </button>
-          )}
           <button
             type="button"
             onClick={() => void pickAndImportEditorData()}
-            title="Pick an exported mod folder (finds mission_editor_edits.json inside) or a JSON edits file directly"
+            title="Pick an exported zip, a mod folder, or mission_editor_edits.json"
           >
             Import editor mod…
           </button>
           <input
             ref={editorImportInputRef}
             type="file"
-            accept=".json,application/json"
+            accept=".json,.zip,application/json,application/zip"
             style={{ display: "none" }}
             onChange={(e) => void onEditorImportInputChange(e.target.files)}
           />
@@ -1957,18 +1894,10 @@ function App() {
             type="button"
             className="primary"
             disabled={exporting || !hasEdits()}
-            onClick={exportMod}
-            title={
-              IS_STATIC
-                ? "Pages cannot write .pchtxt — downloads edits JSON instead"
-                : undefined
-            }
+            onClick={() => void exportMod()}
+            title="Downloads a zip with exefs/main.pchtxt — copy that folder into Ryujinx"
           >
-            {exporting
-              ? "Exporting…"
-              : IS_STATIC
-                ? "Download edits JSON"
-                : "Export Ryujinx mod"}
+            {exporting ? "Exporting…" : "Export Ryujinx mod"}
           </button>
         </div>
       </header>

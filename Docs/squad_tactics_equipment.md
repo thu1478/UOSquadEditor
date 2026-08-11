@@ -233,13 +233,13 @@ private copy on export so you do not rewrite every user of `C12_BOSS`.
 
 ## Using the editor (short)
 
-1. Double-click `run-editor.bat` (or see [Tools/mission_editor/README.md](../Tools/mission_editor/README.md)).
+1. Open https://thu1478.github.io/UOSquadEditor/
 2. **Mission units** — pick a map, a squad, a seat. Swap who stands there, edit
    gear, pick preset 0 / a named preset / create one.
 3. **Default gear** — change Bronze→Recruit’s Shortsword on `NORMAL_SWORD`, etc.
-4. **Export Ryujinx mod** — writes `Mods/<name>/exefs/main.pchtxt`.
-5. Copy that folder into Ryujinx, enable it under **Manage Mods**, fully quit,
-   then boot again.
+4. Name the mod if you want, then **Export Ryujinx mod** (downloads a zip).
+5. Unzip, copy the folder into Ryujinx → **Open Mods Directory**, enable it
+   under **Manage Mods**, fully quit, then boot again.
 
 More preset walkthroughs: [PRESET_EDITOR.md](../Tools/mission_editor/PRESET_EDITOR.md).
 

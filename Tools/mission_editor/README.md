@@ -22,9 +22,8 @@ npm run dev
 
 Open the localhost URL Vite prints.
 
-A read-only-export website build is published from GitHub Actions (repo
-**Settings → Pages → Source: GitHub Actions**). On that site, use **Download
-edits JSON** then import locally to produce a Ryujinx mod.
+The website build can browse and edit, but cannot write a `.pchtxt`. Use
+**Download edits JSON** there, then import locally to produce a Ryujinx mod.
 
 ## What the tabs are for
 

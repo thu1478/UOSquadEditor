@@ -3,21 +3,17 @@
 Start here if you have never opened this repo. You do **not** need to know
 reverse engineering. You need the game (US v1.0.5) and Ryujinx.
 
-There are two separate tools:
+There are two separate things. You do not need both.
 
-| If you want to… | Read |
-|-----------------|------|
-| Change **who** is in a mission squad, their **gear**, or their **tactics** | This page, then [squad_tactics_equipment.md](squad_tactics_equipment.md), then run `run-editor.bat` |
-| Scale **enemy levels** to your party average | [ELI5_enemy_levels.md](ELI5_enemy_levels.md) |
+| If you want to… | Do this |
+|-----------------|---------|
+| Scale **enemy levels** to your party average | Download [Dist/enemy_level_scale.zip](../Dist/enemy_level_scale.zip) and copy the folder into Ryujinx. How it works: [ELI5_enemy_levels.md](ELI5_enemy_levels.md) |
+| Change **who** is in a mission squad, their **gear**, or their **tactics** | [squad_tactics_equipment.md](squad_tactics_equipment.md), then run `run-editor.bat` |
 
 Editor how-tos:
 
 - [Mission editor README](../Tools/mission_editor/README.md) — install, tabs, export
 - [Preset editor](../Tools/mission_editor/PRESET_EDITOR.md) — tactics presets in detail
-
-Only if you are **changing** the level-scale mod itself (not required to use it):
-
-- [enemy_and_stage_levels.md](enemy_and_stage_levels.md) — research log: addresses, dead ends, v37 hooks
 
 ## Tiny glossary
 

@@ -23,7 +23,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-ROOT = Path(r"d:/Documents/Projects/Emulation/UnicornOverlord")
+ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "Scripts"))
 from export_equipaiset import (  # noqa: E402
     EQUIPAISET_BASE,

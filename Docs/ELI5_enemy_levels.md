@@ -20,6 +20,8 @@ This project does that too — but for a Switch game running in **Ryujinx**, the
 
 **`enemy_level_scale` sets enemy levels to your top-10 party average** — for mission stickers on the map, and for wandering overworld squads when you fight them.
 
+To **install** it, download [Dist/enemy_level_scale.zip](../Dist/enemy_level_scale.zip). You do not need this page, the squad editor, or any scripts.
+
 
 
 ---
@@ -227,8 +229,6 @@ We patched many paths that looked like “level” (UI drawers, FlCreate args, t
 ## Where to go next
 
 
-
-- Addresses, dead ends, verify steps → [enemy_and_stage_levels.md](enemy_and_stage_levels.md)  
 
 - Mod folder → `Mods/enemy_level_scale/`  
 

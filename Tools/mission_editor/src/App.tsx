@@ -1891,6 +1891,11 @@ function App() {
           <h1>Mission Squad Editor</h1>
           <p className="sub">
             US v1.0.5 · Tactics slots @ 0x270AF48 · Export Ryujinx ExeFS mod
+            {" · "}
+            <a href={`${import.meta.env.BASE_URL}downloads/enemy_level_scale.zip`}>
+              Download enemy level scale
+            </a>
+            {" (separate mod)"}
           </p>
         </div>
         <div className="header-actions">

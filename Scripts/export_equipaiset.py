@@ -16,7 +16,7 @@ import struct
 from collections import Counter
 from pathlib import Path
 
-ROOT = Path(r"d:/Documents/Projects/Emulation/UnicornOverlord")
+ROOT = Path(__file__).resolve().parent.parent
 MAIN = ROOT / "Extraction/exefs_out/main.decompressed.bin"
 CLASS_EDITOR_PATCH = ROOT / "Mods/class_editor/exefs/main.pchtxt"
 DEBUG = ROOT / "Extraction/cpk_data/Unicorn_US/Debug"

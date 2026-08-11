@@ -224,7 +224,8 @@ type Edits = {
   }[];
 };
 
-const DATA_URL = "/data/mission_squads.json";
+const DATA_URL = `${import.meta.env.BASE_URL}data/mission_squads.json`;
+const IS_STATIC = import.meta.env.VITE_STATIC === "1";
 const MODS_STORAGE_KEY = "uo_mission_editor_mod_paths";
 
 const EMPTY_EDITS: Edits = {
@@ -610,6 +611,12 @@ function App() {
     files: { name: string; text: string }[],
     persistLabels?: string[]
   ) {
+    if (IS_STATIC) {
+      setModStatus(
+        "Loading class .pchtxt mods needs the local editor (Python). On the website, edit here then Download edits JSON."
+      );
+      return;
+    }
     setModLoading(true);
     setModStatus("Resolving class/skill mods…");
     try {
@@ -1609,6 +1616,13 @@ function App() {
   }
 
   async function exportMod() {
+    if (IS_STATIC) {
+      downloadEdits();
+      setExportMsg(
+        "This website cannot write a Ryujinx .pchtxt. Downloaded edits JSON — import it in the local editor (run-editor.bat) and Export there."
+      );
+      return;
+    }
     setExporting(true);
     setExportMsg("");
     const modName = slugModName(
@@ -1883,8 +1897,12 @@ function App() {
           <button
             type="button"
             onClick={() => void pickAndLoadMods()}
-            disabled={modLoading}
-            title="Open a mod folder (e.g. Mods/class_editor) and apply all .pchtxt under it"
+            disabled={modLoading || IS_STATIC}
+            title={
+              IS_STATIC
+                ? "Needs the local editor (Python + dumped main)"
+                : "Open a mod folder (e.g. Mods/class_editor) and apply all .pchtxt under it"
+            }
           >
             {modLoading ? "Loading mods…" : "Load mods folder…"}
           </button>
@@ -1902,6 +1920,7 @@ function App() {
             style={{ display: "none" }}
             onChange={(e) => void onModFolderInputChange(e.target.files)}
           />
+          {!IS_STATIC && (
           <label className="mod-name-field">
             Mod folder name
             <input
@@ -1911,12 +1930,15 @@ function App() {
               onChange={(e) => setModNameInput(e.target.value)}
             />
           </label>
+          )}
           <button type="button" onClick={resetChanges} disabled={!hasEdits()}>
             Reset changes
           </button>
+          {!IS_STATIC && (
           <button type="button" onClick={downloadEdits} disabled={!hasEdits()}>
             Download edits JSON
           </button>
+          )}
           <button
             type="button"
             onClick={() => void pickAndImportEditorData()}
@@ -1936,8 +1958,17 @@ function App() {
             className="primary"
             disabled={exporting || !hasEdits()}
             onClick={exportMod}
+            title={
+              IS_STATIC
+                ? "Pages cannot write .pchtxt — downloads edits JSON instead"
+                : undefined
+            }
           >
-            {exporting ? "Exporting…" : "Export Ryujinx mod"}
+            {exporting
+              ? "Exporting…"
+              : IS_STATIC
+                ? "Download edits JSON"
+                : "Export Ryujinx mod"}
           </button>
         </div>
       </header>

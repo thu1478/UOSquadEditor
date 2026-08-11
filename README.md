@@ -6,6 +6,8 @@ Not affiliated with Atlus, Sega, Vanillaware, or Nintendo. You need your own cop
 
 ## Quick start
 
+Double-click `run-editor.bat`, or:
+
 ```powershell
 cd Tools\mission_editor
 npm install
@@ -14,4 +16,6 @@ npm run dev
 
 Open the localhost URL Vite prints. Export writes a mod under `Mods/` for Ryujinx (`010069401adb8000`).
 
-More detail: [Tools/mission_editor/README.md](Tools/mission_editor/README.md) · [PRESET_EDITOR.md](Tools/mission_editor/PRESET_EDITOR.md)
+**New to the data model?** Read [Docs/squad_tactics_equipment.md](Docs/squad_tactics_equipment.md) (examples first, hex later).
+
+How-tos: [Tools/mission_editor/README.md](Tools/mission_editor/README.md) · [PRESET_EDITOR.md](Tools/mission_editor/PRESET_EDITOR.md) · [Docs/README.md](Docs/README.md)

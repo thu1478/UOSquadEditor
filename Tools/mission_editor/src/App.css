@@ -376,6 +376,40 @@ select {
   gap: 0.5rem 1rem;
 }
 
+.gear-slot-row {
+  display: flex;
+  align-items: stretch;
+  gap: 0.35rem;
+}
+
+.gear-slot-row .combo {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.gear-clear {
+  flex: 0 0 auto;
+  width: 2rem;
+  border: 1px solid var(--border, #3a3a3a);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink, #ddd);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.gear-clear:hover:not(:disabled) {
+  background: #b23c3c;
+  border-color: #b23c3c;
+  color: #fff;
+}
+
+.gear-clear:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
 .item-name {
   font-weight: 600;
   font-size: 0.95rem;
@@ -764,5 +798,24 @@ button.linkish {
 .formation-class,
 .formation-empty {
   font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.sub-tabs {
+  margin-bottom: 0.65rem;
+}
+
+.equiptype-cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.85rem;
+  margin-top: 1rem;
+}
+
+.equiptype-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.85rem;
   color: var(--muted);
 }

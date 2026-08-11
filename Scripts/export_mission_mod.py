@@ -51,6 +51,28 @@ CHARASET_COUNT = 1388
 # corrupts boot, so they must never be handed out as duplication targets.
 RESERVED_CHARASETS = {0, 1}
 GEAR_OFFS = (0x38, 0x3A, 0x3C, 0x3E)
+
+# Engine fix: enemy accessory equip-slot placement (US v1.0.5).
+# Unit init (0xDCD74) keeps non-zero CharaSet gear per slot, but equips
+# ACCESSORIES via a "find first free slot" search (0x2CB590) instead of their
+# fixed slot index. The default pre-fill pass (0xDD290) plants a default
+# accessory (Bronze Bangle in ACC1) for CharaSets with id > 560, so the
+# free-slot search collides -> duplicate accessory (e.g. two Bronze Bangles)
+# and custom accessories are lost. NOP the two branches in each accessory
+# equip loop (ACC1 / ACC2 / slot 3) that divert to the free-slot search so each
+# slot equips into its own fixed index, overwriting the pre-fill. Weapon slot
+# is untouched; empty slots still resolve to their per-slot default (boss
+# default-accessory behavior preserved). Each NOP word = 0xD503201F.
+ENGINE_FIX_NOP_ADDRS = (0xDD138, 0xDD150, 0xDD198, 0xDD1B0, 0xDD1F8, 0xDD210)
+ENGINE_FIX_NOP_WORD = 0xD503201F
+
+# CreateDefaultEquip tables (US v1.0.5)
+CLASS_BASE = 0xD2DFC8
+CLASS_STRIDE = 0x58
+CLASS_ET_OFF = 0x44  # 4 × s16 equiptype bases
+EQUIPTYPE_ITEM_BASE = 0xD13E30
+EQUIPTYPE_ITEM_STRIDE = 0xC  # 3 × u16 level bands
+
 N_IFS = 203
 CLASS_SKILL_BASE = 0xD36D94
 CLASS_SKILL_STRIDE = 0x8C
@@ -371,6 +393,8 @@ def main() -> None:
     allocations = edits.get("equipaiset_allocations") or []
     creates = edits.get("equipaiset_creates") or []
     class_edits = edits.get("class_tactics") or []
+    equiptype_item_edits = edits.get("equiptype_items") or []
+    class_et_edits = edits.get("class_equiptypes") or []
 
     # Brand-new empty (or authored) presets: allocate free ids, write 0x270AF48.
     for create in creates:
@@ -611,6 +635,64 @@ def main() -> None:
             for line in lines
         )
 
+    for et_edit in equiptype_item_edits:
+        eid = int(et_edit.get("equiptype_id") or et_edit.get("id") or 0)
+        if eid < 0:
+            notes.append(f"WARNING: skip equiptype_items id {eid}")
+            continue
+        cols = [
+            int(et_edit.get("item_col0_id") or 0),
+            int(et_edit.get("item_col1_id") or 0),
+            int(et_edit.get("item_col2_id") or 0),
+        ]
+        base = EQUIPTYPE_ITEM_BASE + eid * EQUIPTYPE_ITEM_STRIDE
+        sym = et_edit.get("equiptype_symbol") or f"EQUIPTYPE_{eid}"
+        add_comment(patches, f"EQUIPTYPE ITEMS: {sym} ({eid})")
+        for col, iid in enumerate(cols):
+            patches.append(pchtxt_half(base + col * 2, iid))
+            patches.append(
+                f"//   col{col} (lv band): {item_labels.get(iid) or iid}"
+            )
+        change = (
+            f"Changed default gear band {sym} ({eid}): "
+            + ", ".join(
+                item_labels.get(iid) or str(iid) for iid in cols
+            )
+        )
+        notes.append(change)
+        changes.append(change)
+
+    for cet in class_et_edits:
+        class_id = int(cet.get("class_id") or 0)
+        slots = cet.get("slots") or []
+        if isinstance(slots, dict):
+            # allow {0: et, 1: et, ...} or slot0_equiptype keys
+            slot_ids = [
+                int(
+                    slots.get(s)
+                    or slots.get(str(s))
+                    or slots.get(f"slot{s}_equiptype")
+                    or 0
+                )
+                for s in range(4)
+            ]
+        else:
+            slot_ids = [int(x) for x in list(slots)[:4]]
+            while len(slot_ids) < 4:
+                slot_ids.append(0)
+        class_name = class_labels.get(class_id) or f"class {class_id}"
+        row = CLASS_BASE + class_id * CLASS_STRIDE + CLASS_ET_OFF
+        add_comment(patches, f"CLASS EQUIPTYPES: {class_name} ({class_id})")
+        for s, et in enumerate(slot_ids[:4]):
+            patches.append(pchtxt_half(row + s * 2, et & 0xFFFF))
+            patches.append(f"//   slot {s}: equiptype {et}")
+        change = (
+            f"Changed class equiptype bases for {class_name} ({class_id}): "
+            f"{slot_ids[:4]}"
+        )
+        notes.append(change)
+        changes.append(change)
+
     for ue in unit_edits:
         uid = int(ue["unitset_id"])
         uoff = UNITSET_BASE + uid * UNITSET_STRIDE
@@ -726,6 +808,11 @@ def main() -> None:
         if comment:
             existing = {"_comment": comment, **existing}
         OVERRIDES.write_text(json.dumps(existing, indent=2) + "\n", encoding="utf-8")
+
+    # Always bundle the enemy accessory equip-slot fix so exported gear sticks
+    # in-game (custom accessories otherwise get duplicated/replaced by defaults).
+    for addr in ENGINE_FIX_NOP_ADDRS:
+        patches.append(pchtxt_word(addr, ENGINE_FIX_NOP_WORD))
 
     seen: set[str] = set()
     uniq_patches: list[str] = []

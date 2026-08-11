@@ -137,6 +137,30 @@ type CharasetCatalogEntry = {
   gear: Gear[];
 };
 
+type EquiptypeItem = {
+  id: number;
+  symbol: string;
+  item_col0_id: number;
+  item_col0?: string;
+  item_col1_id: number;
+  item_col1?: string;
+  item_col2_id: number;
+  item_col2?: string;
+  note?: string;
+};
+
+type ClassEquiptypeSlot = {
+  slot: number;
+  equiptype_id: number;
+  equiptype_symbol?: string;
+};
+
+type ClassEquiptypes = {
+  class_id: number;
+  class_symbol: string;
+  slots: ClassEquiptypeSlot[];
+};
+
 type Doc = {
   missions: Mission[];
   equipai_if: CatalogEntry[];
@@ -144,6 +168,8 @@ type Doc = {
   skills?: CatalogEntry[];
   charasets?: CharasetCatalogEntry[];
   class_tactics?: ClassTactics[];
+  equiptype_items?: EquiptypeItem[];
+  class_equiptypes?: ClassEquiptypes[];
   equipaiset_presets?: EquipAiPreset[];
 };
 
@@ -185,6 +211,17 @@ type Edits = {
   equipaiset_allocations: Allocation[];
   equipaiset_creates: PresetCreate[];
   class_tactics: { class_id: number; lines: Line[] }[];
+  equiptype_items: {
+    equiptype_id: number;
+    equiptype_symbol?: string;
+    item_col0_id: number;
+    item_col1_id: number;
+    item_col2_id: number;
+  }[];
+  class_equiptypes: {
+    class_id: number;
+    slots: number[];
+  }[];
 };
 
 const DATA_URL = "/data/mission_squads.json";
@@ -197,6 +234,8 @@ const EMPTY_EDITS: Edits = {
   equipaiset_allocations: [],
   equipaiset_creates: [],
   class_tactics: [],
+  equiptype_items: [],
+  class_equiptypes: [],
 };
 
 function parseImportedEdits(value: unknown): Edits {
@@ -238,6 +277,8 @@ function parseImportedEdits(value: unknown): Edits {
       "equipaiset_creates"
     ) as Edits["equipaiset_creates"],
     class_tactics: array("class_tactics") as Edits["class_tactics"],
+    equiptype_items: array("equiptype_items") as Edits["equiptype_items"],
+    class_equiptypes: array("class_equiptypes") as Edits["class_equiptypes"],
   };
 }
 
@@ -389,6 +430,32 @@ function emptyGear(): Gear[] {
   }));
 }
 
+function cloneGear(gear: Gear[] | undefined): Gear[] {
+  const rows = gear && gear.length ? gear : emptyGear();
+  return [0, 1, 2, 3].map((i) => {
+    const g = rows[i];
+    return g
+      ? { ...g, edited: false }
+      : {
+          item_id: 0,
+          rom_item_id: 0,
+          item_symbol: "",
+          item_name: "",
+          source: "empty",
+          edited: false,
+        };
+  });
+}
+
+function catalogGearRows(
+  catalog: CharasetCatalogEntry | undefined
+): Gear[] {
+  return cloneGear(catalog?.gear).map((g) => ({
+    ...g,
+    source: g.item_id ? "charaset" : g.source || "empty",
+  }));
+}
+
 function emptySlot(slot: number): Slot {
   return {
     slot,
@@ -480,7 +547,9 @@ function refreshEditsSkillNames(
 }
 
 function App() {
-  const [view, setView] = useState<"missions" | "classes" | "presets">("missions");
+  const [view, setView] = useState<
+    "missions" | "classes" | "presets" | "equiptypes"
+  >("missions");
   const [doc, setDoc] = useState<Doc | null>(null);
   const [err, setErr] = useState<string>("");
   const [filter, setFilter] = useState("");
@@ -501,6 +570,8 @@ function App() {
   const [classId, setClassId] = useState<number | null>(null);
   const [presetFilter, setPresetFilter] = useState("");
   const [presetId, setPresetId] = useState<number | null>(null);
+  const [equiptypeFilter, setEquiptypeFilter] = useState("");
+  const [equiptypeId, setEquiptypeId] = useState<number | null>(null);
   const [liveClassTactics, setLiveClassTactics] = useState<ClassTactics[] | null>(
     null
   );
@@ -762,6 +833,20 @@ function App() {
     }
     return opts;
   }, [doc]);
+
+  const equiptypeEntries = useMemo(() => {
+    const q = equiptypeFilter.trim().toLowerCase();
+    return (doc?.equiptype_items ?? []).filter((entry) => {
+      if (!q) return true;
+      return (
+        entry.symbol.toLowerCase().includes(q) ||
+        String(entry.id).includes(q) ||
+        (entry.item_col0 || "").toLowerCase().includes(q) ||
+        (entry.item_col1 || "").toLowerCase().includes(q) ||
+        (entry.item_col2 || "").toLowerCase().includes(q)
+      );
+    });
+  }, [doc, equiptypeFilter]);
 
   const ifOptions: ComboboxOption[] = useMemo(() => {
     const opts: ComboboxOption[] = [
@@ -1231,6 +1316,8 @@ function App() {
       edits.unitsets.length > 0 ||
       edits.charasets.length > 0 ||
       edits.class_tactics.length > 0 ||
+      edits.equiptype_items.length > 0 ||
+      edits.class_equiptypes.length > 0 ||
       edits.equipaiset_allocations.length > 0 ||
       edits.equipaiset_creates.length > 0 ||
       Object.keys(edits.equipaiset_lines).length > 0
@@ -1323,6 +1410,34 @@ function App() {
         { class_id: classEntry.class_id, lines },
       ],
     }));
+  }
+
+  function commitEquiptypeItems(entry: EquiptypeItem, cols: [number, number, number]) {
+    const vanilla = doc?.equiptype_items?.find((e) => e.id === entry.id);
+    const same =
+      vanilla &&
+      vanilla.item_col0_id === cols[0] &&
+      vanilla.item_col1_id === cols[1] &&
+      vanilla.item_col2_id === cols[2];
+    setEdits((prev) => {
+      const rest = prev.equiptype_items.filter(
+        (x) => x.equiptype_id !== entry.id
+      );
+      if (same) return { ...prev, equiptype_items: rest };
+      return {
+        ...prev,
+        equiptype_items: [
+          ...rest,
+          {
+            equiptype_id: entry.id,
+            equiptype_symbol: entry.symbol,
+            item_col0_id: cols[0],
+            item_col1_id: cols[1],
+            item_col2_id: cols[2],
+          },
+        ],
+      };
+    });
   }
 
   function commitPresetLines(preset: EquipAiPreset, lines: Line[]) {
@@ -1556,6 +1671,12 @@ function App() {
     effectiveClassTactics.find((entry) => entry.class_id === classId) ??
     classEntries[0] ??
     null;
+
+  const selectedEquiptype =
+    (doc.equiptype_items ?? []).find((e) => e.id === equiptypeId) ??
+    equiptypeEntries[0] ??
+    null;
+
   // Map every edited unit slot to its (pending) EquipAiSet id so Affects reflects
   // reassignments before export.
   const editedUnitTarget = new Map<string, number>();
@@ -1845,6 +1966,13 @@ function App() {
         >
           EquipAiSet presets
         </button>
+        <button
+          type="button"
+          className={view === "equiptypes" ? "active" : ""}
+          onClick={() => setView("equiptypes")}
+        >
+          Default gear
+        </button>
       </nav>
 
       {view === "missions" ? <div className="layout">
@@ -1945,7 +2073,7 @@ function App() {
                 >
                   <strong>{s.unitset_symbol.replace("UC_UNITSET_", "")}</strong>
                   <span>
-                    {s.side} · {s.role || "Enemy"}
+                    {s.side}
                     {s.paramset_name ? ` · ${s.paramset_name}` : ""}
                     {" · "}
                     {s.slots.filter((sl) => sl.charaset_id > 0).length} units
@@ -1993,6 +2121,13 @@ function App() {
               onChangeGear={(s) => {
                 upsertGear(s);
               }}
+              baselineGear={(() => {
+                const base = rawSquad?.slots.find((s) => s.slot === slot.slot);
+                if (base && base.charaset_id === slot.charaset_id) {
+                  return cloneGear(base.gear);
+                }
+                return catalogGearRows(charasetById.get(slot.charaset_id));
+              })()}
               onChangeLines={(lines) => commitTacticsLines(slot, lines)}
               onCreateEmptyPreset={() => createEmptyPreset(slot.equipaiset_id)}
               onOpenPreset={(id) => {
@@ -2049,7 +2184,7 @@ function App() {
             )}
           </section>
         </div>
-      ) : (
+      ) : view === "presets" ? (
         <div className="catalog-layout">
           <aside className="panel">
             <label className="sort-row">
@@ -2189,7 +2324,133 @@ function App() {
             )}
           </section>
         </div>
+      ) : (
+        <div className="catalog-layout">
+          <aside className="panel">
+            <p className="hint">
+              CreateDefaultEquip item rows. Class tables only store a DEFAULT_*
+              slot <em>type</em> (lance vs sword vs _M); runtime adds tier×11 and
+              level picks the column. Typical mission enemies use{" "}
+              <strong>NORMAL_*</strong> (not DEFAULT_*). ZAKO clamps to DEFAULT_*;
+              POWER/BOSS units use those rows. ENEMY_* is unused after the clamp.
+              Edit every band you care about (e.g. DEFAULT_SWORD and NORMAL_SWORD).
+            </p>
+            <input
+              className="search"
+              placeholder="Filter equiptypes / items…"
+              value={equiptypeFilter}
+              onChange={(e) => setEquiptypeFilter(e.target.value)}
+            />
+            <ul className="list">
+              {equiptypeEntries.map((entry) => {
+                const dirty = edits.equiptype_items.some(
+                  (x) => x.equiptype_id === entry.id
+                );
+                return (
+                  <li key={entry.id}>
+                    <button
+                      type="button"
+                      className={
+                        entry.id === selectedEquiptype?.id ? "active" : ""
+                      }
+                      onClick={() => setEquiptypeId(entry.id)}
+                    >
+                      <strong>
+                        {entry.symbol}
+                        {dirty ? " *" : ""}
+                      </strong>
+                      <span>#{entry.id}</span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </aside>
+          <section className="panel wide">
+            {selectedEquiptype ? (
+              <EquiptypeItemsPanel
+                key={`${selectedEquiptype.id}-${editEpoch}`}
+                entry={selectedEquiptype}
+                edited={edits.equiptype_items.find(
+                  (x) => x.equiptype_id === selectedEquiptype.id
+                )}
+                itemOptions={itemOptions}
+                onChange={(cols) =>
+                  commitEquiptypeItems(selectedEquiptype, cols)
+                }
+              />
+            ) : (
+              <p>No equiptype data. Rebuild mission_squads.json.</p>
+            )}
+          </section>
+        </div>
       )}
+    </div>
+  );
+}
+
+function EquiptypeItemsPanel({
+  entry,
+  edited,
+  itemOptions,
+  onChange,
+}: {
+  entry: EquiptypeItem;
+  edited?: Edits["equiptype_items"][number];
+  itemOptions: ComboboxOption[];
+  onChange: (cols: [number, number, number]) => void;
+}) {
+  const cols: [number, number, number] = [
+    edited?.item_col0_id ?? entry.item_col0_id,
+    edited?.item_col1_id ?? entry.item_col1_id,
+    edited?.item_col2_id ?? entry.item_col2_id,
+  ];
+  const labels = ["Lv 1–14", "Lv 15–27", "Lv 28–50"];
+
+  function setCol(index: number, itemId: number) {
+    const next: [number, number, number] = [...cols];
+    next[index] = itemId;
+    onChange(next);
+  }
+
+  return (
+    <div>
+      <h2>{entry.symbol}</h2>
+      <p className="hint">
+        Equiptype #{entry.id}. Empty CharaSet gear slots resolve through this
+        row when class base + tier×11 lands here.
+        {entry.symbol.startsWith("DEFAULT_")
+          ? " DEFAULT_* is only ZAKO / clamped-DEFAULT — most mission enemies use the matching NORMAL_* row instead."
+          : entry.symbol.startsWith("ENEMY_")
+            ? " ENEMY_* is unused: ZAKO clamps to DEFAULT_*."
+            : entry.symbol.startsWith("NORMAL_")
+              ? " NORMAL_* is the band most mission / fodder enemies use."
+              : ""}{" "}
+        Mission unit gear preview is baked at data build time — re-sync after
+        export if you need updated previews.
+      </p>
+      <div className="equiptype-cols">
+        {labels.map((label, i) => (
+          <label key={label} className="equiptype-col">
+            <span>{label}</span>
+            <div className="gear-slot-row">
+              <SearchableCombobox
+                options={itemOptions}
+                value={cols[i]}
+                onChange={(id) => setCol(i, id)}
+              />
+              <button
+                type="button"
+                className="gear-clear"
+                title="Clear to empty"
+                onClick={() => setCol(i, 0)}
+              >
+                ×
+              </button>
+            </div>
+          </label>
+        ))}
+      </div>
     </div>
   );
 }
@@ -2926,6 +3187,7 @@ function UnitPanel({
   onSwapSlots,
   onChangeSlot,
   onChangeGear,
+  baselineGear,
   onChangeLines,
   onCreateEmptyPreset,
   onOpenPreset,
@@ -2953,6 +3215,7 @@ function UnitPanel({
     extra?: { equipaiset_alloc_key?: string }
   ) => void;
   onChangeGear: (s: Slot) => void;
+  baselineGear: Gear[];
   onChangeLines: (lines: Line[]) => void;
   onCreateEmptyPreset: () => PresetCreate;
   onOpenPreset: (id: number) => void;
@@ -3009,6 +3272,18 @@ function UnitPanel({
     setLocal(next);
     onChangeGear(next);
   }
+
+  function restoreDefaultGear() {
+    const gear = cloneGear(baselineGear);
+    const next = { ...local, gear };
+    setLocal(next);
+    onChangeGear(next);
+  }
+
+  const gearIsCustom = local.gear.some(
+    (g, i) =>
+      Boolean(g.edited) || (g.item_id || 0) !== (baselineGear[i]?.item_id || 0)
+  );
 
   function updateLine(i: number, patchLine: Partial<Line>) {
     const next = lines.map((x, j) => (j === i ? { ...x, ...patchLine } : x));
@@ -3294,17 +3569,43 @@ function UnitPanel({
         )}
       </div>
 
-      <h3>Gear</h3>
+      <div className="row">
+        <h3>Gear</h3>
+        <button
+          type="button"
+          disabled={!gearIsCustom}
+          title={
+            gearIsCustom
+              ? "Revert this unit's gear to vanilla CharaSet / CreateDefaultEquip"
+              : "Gear is already vanilla"
+          }
+          onClick={restoreDefaultGear}
+        >
+          Restore default
+        </button>
+      </div>
       <div className="gear-grid">
         {local.gear.map((g, i) => (
           <label key={i}>
             Slot {i}
-            <SearchableCombobox
-              options={itemOptions}
-              value={g.item_id}
-              emptyLabel="Empty"
-              onChange={(id) => setGearItem(i, id)}
-            />
+            <div className="gear-slot-row">
+              <SearchableCombobox
+                options={itemOptions}
+                value={g.item_id}
+                emptyLabel="Empty"
+                onChange={(id) => setGearItem(i, id)}
+              />
+              <button
+                type="button"
+                className="gear-clear"
+                title="Remove item from this slot"
+                aria-label={`Remove item from slot ${i}`}
+                disabled={!g.item_id}
+                onClick={() => setGearItem(i, 0)}
+              >
+                ×
+              </button>
+            </div>
             <span className="hint">
               {g.source === "charaset" || (g.rom_item_id && !g.from_equiptype)
                 ? "ROM CharaSet"

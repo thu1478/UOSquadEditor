@@ -4,9 +4,10 @@ This guide covers the **EquipAiSet presets** tab in the Mission Squad Editor:
 finding presets, editing tactics slots, creating new presets, assigning them to
 mission units, and exporting a Ryujinx mod.
 
-For binary addresses and reverse-engineering notes, see
-[`Docs/squad_tactics_equipment.md`](../../Docs/squad_tactics_equipment.md).
-For setup (`npm run dev`, data sync), see [`README.md`](README.md).
+If UnitSet / CharaSet / “preset 0” are new, start with
+[`Docs/squad_tactics_equipment.md`](../../Docs/squad_tactics_equipment.md)
+(plain-language examples). Addresses are in that doc’s **Reference** section.
+For setup (`run-editor.bat` / `npm run dev`), see [`README.md`](README.md).
 
 ---
 
@@ -316,8 +317,7 @@ Class defaults tab).
    blank lines**; Ryujinx 1.1.1403 stops applying patches after a blank). Readable
    change detail goes in `CHANGELOG.txt`; the mod folder also has
    `mission_editor_edits.json` for round-trip import.
-4. Copy that mod folder into
-   `%AppData%\Ryujinx\mods\contents\010069401adb8000\`, enable it in Ryujinx,
+4. Copy that mod folder into Ryujinx, enable it under **Manage Mods**,
    and fully quit/relaunch so ExeFS patches reload. Confirm in the log with
    `Matching IPSwitch patch 'main.pchtxt' in '<mod>'` plus
    `Patching address offset …` lines for your edited addresses.

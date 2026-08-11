@@ -37,7 +37,7 @@ Open the localhost URL Vite prints. Export writes a mod under `Mods/` for Ryujin
 **Website (browse / edit only):** https://thu1478.github.io/UOSquadEditor/  
 GitHub Pages cannot write a `.pchtxt`. Download edits JSON there, then import it in the local editor and Export.
 
-After the first push, set the repo to **Settings → Pages → Source: GitHub Actions**.
+After the first deploy, if the site 404s: **Settings → Pages → Source: Deploy from a branch** → `gh-pages` / `/ (root)`.
 
 **New to the data model?** Read [Docs/squad_tactics_equipment.md](Docs/squad_tactics_equipment.md) (examples first, hex later).
 

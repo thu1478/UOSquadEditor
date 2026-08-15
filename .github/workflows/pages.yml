@@ -34,8 +34,10 @@ jobs:
           npm run build
           mkdir -p ../../_site/editor
           cp -a dist/. ../../_site/editor/
-          cp ../site/index.html ../site/hub.css ../../_site/
+          cp ../site/index.html ../site/hub.css ../site/hub.js ../../_site/
           cp ../../Release/enemy_level_scale.zip ../../_site/
+          mkdir -p ../../_site/xp_scale
+          cp ../../Release/xp_scale/xp_scale_*.zip ../../_site/xp_scale/
           touch ../../_site/.nojekyll
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v4

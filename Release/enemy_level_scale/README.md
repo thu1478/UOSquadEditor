@@ -8,12 +8,12 @@ This is **not** the squad editor. You do not need Node, Python, or the website.
 
 ## Install
 
-1. In Ryujinx, right-click **Unicorn Overlord** → **Open Mods Directory**.
-2. Copy this whole `enemy_level_scale` folder there (the folder that contains `exefs/`).
-3. Enable **enemy_level_scale** under **Manage Mods**.
-4. Fully quit Ryujinx, then boot the game.
+1. Download [Release/enemy_level_scale.zip](enemy_level_scale.zip)
+2. Unzip — you get a folder named `enemy_level_scale` that contains `exefs/`
+3. In Ryujinx: right-click **Unicorn Overlord** → **Open Mods Directory** → paste that folder
+4. Enable it under **Manage Mods**. Fully quit Ryujinx, then boot.
 
-You can run this at the same time as a squad-editor export. They are separate mods.
+Wrong game version = the mod will not apply. US 1.0.5 only.
 
 ## What you should see
 

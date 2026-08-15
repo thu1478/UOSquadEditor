@@ -7,8 +7,9 @@ There are two separate things. You do not need both.
 
 | If you want to… | Do this |
 |-----------------|---------|
-| See both mods | Open the [UO Tools hub](https://thu1478.github.io/UOSquadEditor/) |
+| See available mods | Open the [UO Tools hub](https://thu1478.github.io/UOSquadEditor/) |
 | Scale **enemy levels** to your party average | Download from the hub, or [Release/enemy_level_scale.zip](../Release/enemy_level_scale.zip). How it works: [ELI5_enemy_levels.md](ELI5_enemy_levels.md) |
+| Scale **combat EXP** | Hub → **XP Scale** slider, or [Release/xp_scale/](../Release/xp_scale/) (books unchanged) |
 | Change **who** is in a mission squad, their **gear**, or their **tactics** | Open the [Mission Squad Editor](https://thu1478.github.io/UOSquadEditor/editor/). How it works: [squad_tactics_equipment.md](squad_tactics_equipment.md) |
 
 Editor how-tos:

@@ -18,6 +18,7 @@ title.keys
 dist/
 _site/
 preview/
+Release/xp_scale/variants/
 *.log
 
 # Heavy / optional local tooling (not your app)
@@ -25,7 +26,10 @@ Tools/*.exe
 Tools/CriPakTools/
 Tools/hactool*/
 
-# Research / one-off exports (keep local)
+*.CT
+*.ct
+
+# Local working copies of Ryujinx mods
 Mods/
 Scripts/_*.py
 TODO.md

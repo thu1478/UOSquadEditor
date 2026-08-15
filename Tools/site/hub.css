@@ -166,6 +166,35 @@ body {
   margin-top: 0.95rem;
 }
 
+.xp-scale {
+  margin: 0.85rem 0 0.5rem;
+}
+
+.xp-scale-readout {
+  margin-bottom: 0.45rem;
+  color: var(--ink-soft);
+}
+
+.xp-scale-readout strong {
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+.xp-slider {
+  width: 100%;
+  accent-color: var(--crimson);
+  cursor: pointer;
+}
+
+.xp-scale-ticks {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
 .btn {
   display: inline-flex;
   align-items: center;

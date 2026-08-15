@@ -80,10 +80,11 @@ function jsonErr(res: ServerResponse, code: number, error: string) {
   res.end(JSON.stringify({ error }));
 }
 
-/** Local hub at `/`, editor SPA under `/editor/`, zip download. Pages build ignores this. */
+/** Local hub at `/`, editor SPA under `/editor/`, zip downloads. Pages build ignores this. */
 function uoHubDevPlugin(): Plugin {
   const siteDir = path.resolve(REPO_ROOT, "Tools/site");
-  const zipPath = path.resolve(REPO_ROOT, "Release/enemy_level_scale.zip");
+  const levelZip = path.resolve(REPO_ROOT, "Release/enemy_level_scale.zip");
+  const xpZipDir = path.resolve(REPO_ROOT, "Release/xp_scale");
 
   return {
     name: "uo-hub-dev",
@@ -91,13 +92,19 @@ function uoHubDevPlugin(): Plugin {
       server.middlewares.use((req, res, next) => {
         const url = (req.url || "").split("?")[0];
 
-        if (url === "/hub.css") {
-          res.setHeader("Content-Type", "text/css; charset=utf-8");
-          res.end(fs.readFileSync(path.join(siteDir, "hub.css")));
+        if (url === "/hub.css" || url === "/hub.js") {
+          const file = url === "/hub.css" ? "hub.css" : "hub.js";
+          res.setHeader(
+            "Content-Type",
+            file.endsWith(".css")
+              ? "text/css; charset=utf-8"
+              : "text/javascript; charset=utf-8"
+          );
+          res.end(fs.readFileSync(path.join(siteDir, file)));
           return;
         }
         if (url === "/enemy_level_scale.zip") {
-          if (!fs.existsSync(zipPath)) {
+          if (!fs.existsSync(levelZip)) {
             res.statusCode = 404;
             res.end("enemy_level_scale.zip missing — build Release/ first");
             return;
@@ -106,6 +113,22 @@ function uoHubDevPlugin(): Plugin {
           res.setHeader(
             "Content-Disposition",
             'attachment; filename="enemy_level_scale.zip"'
+          );
+          fs.createReadStream(levelZip).pipe(res);
+          return;
+        }
+        if (url.startsWith("/xp_scale/") && url.endsWith(".zip")) {
+          const name = path.basename(url);
+          const zipPath = path.join(xpZipDir, name);
+          if (!fs.existsSync(zipPath) || !name.startsWith("xp_scale_")) {
+            res.statusCode = 404;
+            res.end("xp scale zip not found");
+            return;
+          }
+          res.setHeader("Content-Type", "application/zip");
+          res.setHeader(
+            "Content-Disposition",
+            `attachment; filename="${name}"`
           );
           fs.createReadStream(zipPath).pipe(res);
           return;

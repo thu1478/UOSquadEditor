@@ -6,7 +6,7 @@
     <title>UO Tools — Unicorn Overlord (Ryujinx)</title>
     <meta
       name="description"
-      content="Unofficial Unicorn Overlord mods for Ryujinx US v1.0.5: enemy level scaling and mission squad editor."
+      content="Unofficial Unicorn Overlord mods for Ryujinx US v1.0.5: enemy level scaling, combat XP scaling, and mission squad editor."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -45,13 +45,62 @@
               </li>
               <li>Sigil Trials stay at vanilla levels</li>
               <li>
-                Unzip into a folder named <code>enemy_level_scale</code> (it
-                must contain <code>exefs/</code>), then copy that folder into
+                Unzip, then copy the <code>enemy_level_scale</code> folder into
                 Ryujinx mods and enable it
               </li>
             </ul>
             <div class="actions">
               <a class="btn primary" href="./enemy_level_scale.zip" download
+                >Download zip</a
+              >
+            </div>
+          </div>
+        </details>
+
+        <details class="mod">
+          <summary>
+            <span class="mod-name">XP Scale</span>
+            <span class="mod-tag">Download</span>
+          </summary>
+          <div class="mod-body">
+            <p>
+              Multiplies <strong>combat</strong> EXP (battle grants and +EXP
+              text). Book / item EXP is unchanged. Pick a multiplier, then
+              download that variant.
+            </p>
+            <div class="xp-scale">
+              <div class="xp-scale-readout">
+                Multiplier: <strong id="xp-mult-label">×1</strong>
+              </div>
+              <input
+                id="xp-mult-slider"
+                class="xp-slider"
+                type="range"
+                min="0"
+                max="8"
+                step="1"
+                value="4"
+                aria-label="XP multiplier"
+              />
+              <div class="xp-scale-ticks" aria-hidden="true">
+                <span>0.1</span><span>0.25</span><span>0.5</span><span>0.75</span
+                ><span>1</span><span>1.25</span><span>1.5</span><span>2</span
+                ><span>10</span>
+              </div>
+            </div>
+            <ul>
+              <li>Only enable one XP scale zip at a time</li>
+              <li>
+                Unzip, then copy the <code>xp_scale</code> folder into Ryujinx
+                mods
+              </li>
+            </ul>
+            <div class="actions">
+              <a
+                id="xp-download"
+                class="btn primary"
+                href="./xp_scale/xp_scale_1.zip"
+                download
                 >Download zip</a
               >
             </div>
@@ -78,5 +127,6 @@
         </p>
       </footer>
     </main>
+    <script src="./hub.js" defer></script>
   </body>
 </html>

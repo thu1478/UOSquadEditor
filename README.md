@@ -10,18 +10,28 @@ Original code is [MIT](LICENSE). Game names and data stay with their owners.
 
 | Want | Get |
 |------|-----|
-| Browse both mods | [UO Tools hub](https://thu1478.github.io/UOSquadEditor/) |
-| Enemy levels = your party average | Hub → **Enemy Level Scale** (download zip), or [Release/enemy_level_scale.zip](Release/enemy_level_scale.zip) |
+| Browse all mods | [UO Tools hub](https://thu1478.github.io/UOSquadEditor/) |
+| Enemy levels = your party average | Hub → **Enemy Level Scale**, or [Release/enemy_level_scale.zip](Release/enemy_level_scale.zip) |
+| Combat EXP multiplier | Hub → **XP Scale** (slider), or [Release/xp_scale/](Release/xp_scale/) |
 | Change mission squads / gear / tactics | [Mission Squad Editor](https://thu1478.github.io/UOSquadEditor/editor/) |
 
 ## Just the level scaler
 
 1. Download [Release/enemy_level_scale.zip](Release/enemy_level_scale.zip) (or from the hub)
-2. Unzip so you have a folder named `enemy_level_scale` that contains `exefs/`
+2. Unzip — you get a folder named `enemy_level_scale` that contains `exefs/`
 3. In Ryujinx: right-click **Unicorn Overlord** → **Open Mods Directory** → paste that folder
 4. Enable it under **Manage Mods**. Fully quit Ryujinx, then boot.
 
 Details: [Release/enemy_level_scale/README.md](Release/enemy_level_scale/README.md) · how it works: [Docs/ELI5_enemy_levels.md](Docs/ELI5_enemy_levels.md)
+
+## XP scale (combat)
+
+1. On the hub, open **XP Scale**, drag the bar to a multiplier, download that zip (or pick a file under [Release/xp_scale/](Release/xp_scale/))
+2. Unzip — you get a folder named `xp_scale` that contains `exefs/`
+3. Copy into Ryujinx mods and enable it (only one XP scale zip at a time)
+4. Fully quit Ryujinx, then boot
+
+Details: [Release/xp_scale/README.md](Release/xp_scale/README.md)
 
 ## Squad editor
 

@@ -31,5 +31,10 @@ Tools/hactool*/
 
 # Local working copies of Ryujinx mods
 Mods/
+
+# Scripts: only product tools in Scripts/ are committed
+Scripts/local/
+Scripts/__pycache__/
 Scripts/_*.py
+**/__pycache__/
 TODO.md

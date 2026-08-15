@@ -6,16 +6,17 @@ Not affiliated with Atlus, Sega, Vanillaware, or Nintendo. You need your own cop
 
 Original code is [MIT](LICENSE). Game names and data stay with their owners.
 
-These are **two separate things**. You can use either, or both.
+**Site:** https://thu1478.github.io/UOSquadEditor/
 
 | Want | Get |
 |------|-----|
-| Enemy levels = your party average | [Download the level scaler](Release/enemy_level_scale.zip) — copy the folder into Ryujinx. Done. |
-| Change mission squads / gear / tactics | [Open the editor](https://thu1478.github.io/UOSquadEditor/) |
+| Browse both mods | [UO Tools hub](https://thu1478.github.io/UOSquadEditor/) |
+| Enemy levels = your party average | Hub → **Enemy Level Scale** (download zip), or [Release/enemy_level_scale.zip](Release/enemy_level_scale.zip) |
+| Change mission squads / gear / tactics | [Mission Squad Editor](https://thu1478.github.io/UOSquadEditor/editor/) |
 
 ## Just the level scaler
 
-1. Download [Release/enemy_level_scale.zip](Release/enemy_level_scale.zip)
+1. Download [Release/enemy_level_scale.zip](Release/enemy_level_scale.zip) (or from the hub)
 2. Unzip so you have a folder named `enemy_level_scale` that contains `exefs/`
 3. In Ryujinx: right-click **Unicorn Overlord** → **Open Mods Directory** → paste that folder
 4. Enable it under **Manage Mods**. Fully quit Ryujinx, then boot.
@@ -24,7 +25,7 @@ Details: [Release/enemy_level_scale/README.md](Release/enemy_level_scale/README.
 
 ## Squad editor
 
-**Use the website:** https://thu1478.github.io/UOSquadEditor/
+**Use the website:** https://thu1478.github.io/UOSquadEditor/editor/
 
 1. Edit squads, gear, tactics, class defaults, or default-gear tables
 2. Optionally name the mod in **Mod folder name**

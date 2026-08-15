@@ -233,7 +233,7 @@ private copy on export so you do not rewrite every user of `C12_BOSS`.
 
 ## Using the editor (short)
 
-1. Open https://thu1478.github.io/UOSquadEditor/
+1. Open https://thu1478.github.io/UOSquadEditor/editor/
 2. **Mission units** — pick a map, a squad, a seat. Swap who stands there, edit
    gear, pick preset 0 / a named preset / create one.
 3. **Default gear** — change Bronze→Recruit’s Shortsword on `NORMAL_SWORD`, etc.

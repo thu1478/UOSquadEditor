@@ -19,6 +19,7 @@ You can run this at the same time as a squad-editor export. They are separate mo
 
 - **Mission stickers** may still show vanilla until you teleport or hover a liberation fight once; then they update and stay updated.
 - A few late missions (Z1 / Z2 / Sorm / some Elheim Z fights) **never scale down** — they only go above their vanilla level if your average is higher.
+- **Sigil Trials** (Beginner through Apex) stay at their vanilla levels and are not scaled.
 - **Wanderers** update when you engage them.
 
 Wrong game version = the mod will not apply. US 1.0.5 only.

@@ -16,6 +16,8 @@ title.keys
 .idea/
 **/node_modules/
 dist/
+_site/
+preview/
 *.log
 
 # Heavy / optional local tooling (not your app)

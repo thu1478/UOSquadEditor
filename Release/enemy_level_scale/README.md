@@ -8,12 +8,15 @@ This is **not** the squad editor. You do not need Node, Python, or the website.
 
 ## Install
 
-1. Download [Release/enemy_level_scale.zip](enemy_level_scale.zip)
+1. Download [enemy_level_scale.zip](enemy_level_scale.zip)
 2. Unzip — you get a folder named `enemy_level_scale` that contains `exefs/`
 3. In Ryujinx: right-click **Unicorn Overlord** → **Open Mods Directory** → paste that folder
-4. Enable it under **Manage Mods**. Fully quit Ryujinx, then boot.
+4. Enable it under **Manage Mods**
+5. Fully quit Ryujinx. If you are replacing an older build, delete  
+   `%AppData%\Ryujinx\games\010069401adb8000\cache\cpu`  
+   then boot again.
 
-Wrong game version = the mod will not apply. US 1.0.5 only.
+Wrong game version = the mod will not apply. **US 1.0.5 only.**
 
 ## What you should see
 
@@ -22,4 +25,7 @@ Wrong game version = the mod will not apply. US 1.0.5 only.
 - **Sigil Trials** (Beginner through Apex) stay at their vanilla levels and are not scaled.
 - **Wanderers** update when you engage them.
 
-Wrong game version = the mod will not apply. US 1.0.5 only.
+## Notes
+
+- Safe to run alongside the squad editor and XP scale mods (separate folders).
+- After updating this mod, always fully quit Ryujinx and clear the CPU cache folder above if levels or audio look stuck on an old build.

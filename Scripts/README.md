@@ -7,6 +7,7 @@ Product / rebuild tools used by the hub, editor, and release mods:
 | Script | Role |
 |--------|------|
 | `gen_xp_scale.py` | Build `Release/xp_scale/*.zip` |
+| `gen_enemy_level_scale.py` | Build `Release/enemy_level_scale.zip` |
 | `sync_mission_editor_data.ps1` | Rebuild editor JSON from Extraction |
 | `run-editor.ps1` | Launch local mission editor |
 | `build_mission_squads_json.py` | Editor document |

@@ -19,6 +19,7 @@ dist/
 _site/
 preview/
 Release/xp_scale/variants/
+Tools/site/*.zip
 *.log
 
 # Heavy / optional local tooling (not your app)

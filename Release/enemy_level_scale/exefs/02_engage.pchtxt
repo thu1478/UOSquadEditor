@@ -1,7 +1,7 @@
 @nsobid-C841FFE2717FF03A13990480C51DA73F091C04FA
 @flag offset_shift 0x100
 @enabled
-// v39 engage +0x1bc4 -> GetCharaAverageLv(10)
+// engage +0x1bc4 -> GetCharaAverageLv(10)
 00199AF0 24562B94
 00C6F380 FD7BBDA9
 00C6F384 F30B00F9

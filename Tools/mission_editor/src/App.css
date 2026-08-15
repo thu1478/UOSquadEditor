@@ -37,6 +37,21 @@ body {
   margin-bottom: 1rem;
 }
 
+.hub-back {
+  margin: 0 0 0.35rem;
+  font-size: 0.85rem;
+}
+
+.hub-back a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.hub-back a:hover {
+  text-decoration: underline;
+}
+
 h1,
 h2,
 h3 {

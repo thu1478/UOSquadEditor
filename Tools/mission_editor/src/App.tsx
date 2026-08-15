@@ -1833,6 +1833,9 @@ function App() {
     <div className="app">
       <header className="header">
         <div>
+          <p className="hub-back">
+            <a href="../">← All mods</a>
+          </p>
           <h1>Mission Squad Editor</h1>
           <p className="sub">
             US v1.0.5 · Tactics slots @ 0x270AF48 · Export Ryujinx ExeFS mod

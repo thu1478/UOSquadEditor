@@ -3,7 +3,8 @@
 Change Unicorn Overlord **mission squads** (who stands where, what they hold,
 which tactics list they use) and export a Ryujinx mod.
 
-**Use the website:** https://thu1478.github.io/UOSquadEditor/
+**Use the website:** https://thu1478.github.io/UOSquadEditor/editor/  
+Hub (all mods): https://thu1478.github.io/UOSquadEditor/
 
 You need your own copy of the game. This is not an official tool.
 

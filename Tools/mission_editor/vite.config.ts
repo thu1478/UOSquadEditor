@@ -80,6 +80,58 @@ function jsonErr(res: ServerResponse, code: number, error: string) {
   res.end(JSON.stringify({ error }));
 }
 
+/** Local hub at `/`, editor SPA under `/editor/`, zip download. Pages build ignores this. */
+function uoHubDevPlugin(): Plugin {
+  const siteDir = path.resolve(REPO_ROOT, "Tools/site");
+  const zipPath = path.resolve(REPO_ROOT, "Release/enemy_level_scale.zip");
+
+  return {
+    name: "uo-hub-dev",
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const url = (req.url || "").split("?")[0];
+
+        if (url === "/hub.css") {
+          res.setHeader("Content-Type", "text/css; charset=utf-8");
+          res.end(fs.readFileSync(path.join(siteDir, "hub.css")));
+          return;
+        }
+        if (url === "/enemy_level_scale.zip") {
+          if (!fs.existsSync(zipPath)) {
+            res.statusCode = 404;
+            res.end("enemy_level_scale.zip missing — build Release/ first");
+            return;
+          }
+          res.setHeader("Content-Type", "application/zip");
+          res.setHeader(
+            "Content-Disposition",
+            'attachment; filename="enemy_level_scale.zip"'
+          );
+          fs.createReadStream(zipPath).pipe(res);
+          return;
+        }
+        if (url === "/" || url === "/index.html") {
+          res.setHeader("Content-Type", "text/html; charset=utf-8");
+          res.end(fs.readFileSync(path.join(siteDir, "index.html")));
+          return;
+        }
+        // Mount the Vite SPA under /editor/ (same paths as GitHub Pages).
+        if (url === "/editor" || url === "/editor/") {
+          req.url = "/index.html";
+          next();
+          return;
+        }
+        if (url.startsWith("/editor/")) {
+          req.url = url.slice("/editor".length) || "/";
+          next();
+          return;
+        }
+        next();
+      });
+    },
+  };
+}
+
 function missionEditorApiPlugin(): Plugin {
   return {
     name: "mission-editor-api",
@@ -221,6 +273,10 @@ function missionEditorApiPlugin(): Plugin {
 }
 
 export default defineConfig({
+  // Local: `/` hub + `/editor/` SPA (middleware). Pages sets VITE_BASE=/UOSquadEditor/editor/.
   base: process.env.VITE_BASE || "/",
-  plugins: [react(), missionEditorApiPlugin()],
+  plugins: [react(), uoHubDevPlugin(), missionEditorApiPlugin()],
+  server: {
+    open: "/",
+  },
 });

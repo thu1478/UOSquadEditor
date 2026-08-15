@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>UO Tools — Unicorn Overlord (Ryujinx)</title>
+    <meta
+      name="description"
+      content="Unofficial Unicorn Overlord mods for Ryujinx US v1.0.5: enemy level scaling and mission squad editor."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./hub.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="brand">
+        <p class="eyebrow">Unofficial · Ryujinx · US v1.0.5</p>
+        <h1>UO Tools</h1>
+        <p class="lede">
+          Fan mods for Unicorn Overlord. Each installs as its own Ryujinx mod
+          folder.
+        </p>
+      </header>
+
+      <section class="mods" aria-label="Available mods">
+        <details class="mod">
+          <summary>
+            <span class="mod-name">Enemy Level Scale</span>
+            <span class="mod-tag">Download</span>
+          </summary>
+          <div class="mod-body">
+            <p>
+              Sets enemy levels to the average of your top 10 units — mission
+              stickers and wandering squads when you engage them. No editor
+              required.
+            </p>
+            <ul>
+              <li>
+                Late story floors (Z1 / Z2 / Sorm / Elheim Z) never scale down
+              </li>
+              <li>Sigil Trials stay at vanilla levels</li>
+              <li>
+                Unzip into a folder named <code>enemy_level_scale</code> (it
+                must contain <code>exefs/</code>), then copy that folder into
+                Ryujinx mods and enable it
+              </li>
+            </ul>
+            <div class="actions">
+              <a class="btn primary" href="./enemy_level_scale.zip" download
+                >Download zip</a
+              >
+            </div>
+          </div>
+        </details>
+
+        <a class="mod mod-link" href="./editor/">
+          <span class="mod-name">Mission Squad Editor</span>
+          <span class="mod-tag">Open</span>
+          <span class="mod-blurb"
+            >Edit mission squads, gear, tactics, and class defaults, then export
+            a Ryujinx <code>.pchtxt</code> mod zip from the browser.</span
+          >
+        </a>
+      </section>
+
+      <footer class="foot">
+        <p>
+          Not affiliated with Atlus, Sega, Vanillaware, or Nintendo. You need
+          your own copy of the game.
+        </p>
+        <p>
+          <a href="https://github.com/thu1478/UOSquadEditor">Source on GitHub</a>
+        </p>
+      </footer>
+    </main>
+  </body>
+</html>
